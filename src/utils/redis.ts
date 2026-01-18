@@ -54,11 +54,13 @@ if (process.env.REDIS_URL) {
 export { redis };
 
 /**
- * BullMQ must receive connection OPTIONS, not Redis instance
+ * BullMQ must receive connection OPTIONS (not Redis instance)
  */
 export function getBullMQConnection(): ConnectionOptions {
   if (process.env.REDIS_URL) {
-    return { url: process.env.REDIS_URL };
+    return {
+      url: process.env.REDIS_URL,
+    };
   }
 
   return {
@@ -66,5 +68,3 @@ export function getBullMQConnection(): ConnectionOptions {
     port: Number(process.env.REDIS_PORT || 6379),
   };
 }
-}
-
