@@ -1,6 +1,12 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/auth";
-import { scheduleEmail } from "../controllers/email";
+
+import {
+  scheduleEmail,
+  getScheduledEmails,
+  getSentEmails,
+} from "../controllers/email";
+
 
 const router = Router();
 
@@ -13,5 +19,11 @@ router.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 router.post("/schedule", scheduleEmail);
+
+
+
+router.post("/schedule", scheduleEmail);
+router.get("/scheduled", getScheduledEmails);
+router.get("/sent", getSentEmails);
 
 export default router;
