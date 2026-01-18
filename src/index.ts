@@ -1,4 +1,6 @@
 import "reflect-metadata";
+import './worker'; // START WORKER HERE
+
 import express, { Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -34,3 +36,4 @@ app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
   await requeuePendingEmails();
 });
+
