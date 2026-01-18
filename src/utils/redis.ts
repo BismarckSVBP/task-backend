@@ -35,15 +35,26 @@
 import Redis from "ioredis";
 import { ConnectionOptions } from "bullmq";
 
-export const redis = new Redis(process.env.REDIS_URL ?? {
-  host: process.env.REDIS_HOST || "localhost",
-  port: Number(process.env.REDIS_PORT || 6379),
-  maxRetriesPerRequest: null,
-  enableReadyCheck: false,
-});
+let redis: Redis;
+
+if (process.env.REDIS_URL) {
+  redis = new Redis(process.env.REDIS_URL, {
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
+  });
+} else {
+  redis = new Redis({
+    host: process.env.REDIS_HOST || "localhost",
+    port: Number(process.env.REDIS_PORT || 6379),
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
+  });
+}
+
+export { redis };
 
 /**
- * BullMQ must receive CONNECTION OPTIONS, not a Redis instance
+ * BullMQ must receive connection OPTIONS, not Redis instance
  */
 export function getBullMQConnection(): ConnectionOptions {
   if (process.env.REDIS_URL) {
@@ -55,3 +66,5 @@ export function getBullMQConnection(): ConnectionOptions {
     port: Number(process.env.REDIS_PORT || 6379),
   };
 }
+}
+
