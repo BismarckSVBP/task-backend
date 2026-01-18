@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
-import prisma from "../utils/prisma";
 import { VerifyCallback } from "passport-oauth2";
+import prisma from "../utils/prisma";
 
 export const configurePassport = () => {
   passport.use(
@@ -19,9 +19,7 @@ export const configurePassport = () => {
       ) => {
         try {
           const email = profile.emails?.[0]?.value;
-          if (!email) {
-            return done(new Error("No email found"));
-          }
+          if (!email) return done(new Error("No email found"));
 
           let user = await prisma.user.findUnique({ where: { email } });
 
@@ -43,24 +41,24 @@ export const configurePassport = () => {
             });
           }
 
-          return done(null, user);
-        } catch (error) {
-          return done(error as Error);
+          done(null, user);
+        } catch (err) {
+          done(err as Error);
         }
       }
     )
   );
 
-  passport.serializeUser((user: any, done) => {
-    done(null, user.id as string);
+  passport.serializeUser((user: any, done: (err: any, id?: string) => void) => {
+    done(null, user.id);
   });
 
   passport.deserializeUser(async (id: string, done) => {
     try {
       const user = await prisma.user.findUnique({ where: { id } });
       done(null, user);
-    } catch (error) {
-      done(error as Error);
+    } catch (err) {
+      done(err);
     }
   });
 };
