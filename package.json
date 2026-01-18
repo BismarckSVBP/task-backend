@@ -18,6 +18,12 @@
     "@prisma/client": "5.22.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/nodemailer": "^7.0.5",
+    "@types/passport": "^1.0.17",
+    "@types/passport-google-oauth20": "^2.0.17",
+    "@types/passport-oauth2": "^1.8.0",
     "bcryptjs": "^3.0.3",
     "bullmq": "^5.66.5",
     "class-transformer": "^0.5.1",
@@ -37,13 +43,7 @@
     "typeorm": "^0.3.28"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
     "@types/node": "^25.0.9",
-    "@types/nodemailer": "^7.0.5",
-    "@types/passport": "^1.0.17",
-    "@types/passport-google-oauth20": "^2.0.17",
-    "@types/passport-oauth2": "^1.8.0",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
