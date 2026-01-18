@@ -32,28 +32,26 @@
 //     };
 //   }
 // }
-
-import IORedis from "ioredis";
+import Redis from "ioredis";
 import { ConnectionOptions } from "bullmq";
 
-/**
- * Single Redis connection for app usage (cache, sessions, etc.)
- */
-export const redis = new IORedis(
-  process.env.REDIS_URL ?? {
-    host: process.env.REDIS_HOST || "localhost",
-    port: Number(process.env.REDIS_PORT || 6379),
-  },
-  {
-    maxRetriesPerRequest: null,
-    enableReadyCheck: false,
-  }
-);
+export const redis = new Redis(process.env.REDIS_URL ?? {
+  host: process.env.REDIS_HOST || "localhost",
+  port: Number(process.env.REDIS_PORT || 6379),
+  maxRetriesPerRequest: null,
+  enableReadyCheck: false,
+});
 
 /**
- * BullMQ MUST receive an IORedis instance or ConnectionOptions
- * We return an IORedis instance for full compatibility.
+ * BullMQ must receive CONNECTION OPTIONS, not a Redis instance
  */
 export function getBullMQConnection(): ConnectionOptions {
-  return redis;
+  if (process.env.REDIS_URL) {
+    return { url: process.env.REDIS_URL };
+  }
+
+  return {
+    host: process.env.REDIS_HOST || "localhost",
+    port: Number(process.env.REDIS_PORT || 6379),
+  };
 }
