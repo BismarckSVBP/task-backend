@@ -49,9 +49,11 @@ export const configurePassport = () => {
     )
   );
 
-  passport.serializeUser((user: any, done: (err: any, id?: string) => void) => {
-    done(null, user.id);
-  });
+  passport.serializeUser(
+    (user: any, done: (err: any, id?: string) => void) => {
+      done(null, user.id);
+    }
+  );
 
   passport.deserializeUser(async (id: string, done) => {
     try {
