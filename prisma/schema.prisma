@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EmailStatus {
+  scheduled
+  processing
+  sent
+  failed
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  googleId     String     @unique
+  name         String?
+  avatar       String?
+  password     String?
+  accessToken  String?
+  refreshToken String?
+  hourlyLimit  Int        @default(100)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  emailJobs    EmailJob[]
+}
+
+model EmailJob {
+  id             String      @id @default(uuid())
+  userId         String
+  recipient      String
+  subject        String
+  body           String
+  status         EmailStatus
+  scheduledAt    DateTime
+  sentAt         DateTime?
+  messageId      String?
+  sequenceNumber Int
+  queued         Boolean     @default(false)
+  fromEmail      String?
+  attachments    String?     @default("[]") // JSON array of attachment metadata
+  user           User        @relation(fields: [userId], references: [id])
+}
