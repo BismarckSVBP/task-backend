@@ -8,9 +8,11 @@ export interface JwtPayload {
 }
 
 export function generateToken(user: { id: string; email: string }) {
-  return jwt.sign({ id: user.id, email: user.email }, SECRET, {
-    expiresIn: "7d",
-  });
+  return jwt.sign(
+    { id: user.id, email: user.email },
+    SECRET,
+    { expiresIn: "7d" }
+  );
 }
 
 export function verifyToken(token: string): JwtPayload {
