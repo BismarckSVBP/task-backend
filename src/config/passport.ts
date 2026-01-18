@@ -1,19 +1,27 @@
-import passport from 'passport';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import prisma from '../utils/prisma';
+import passport from "passport";
+import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
+import prisma from "../utils/prisma";
+import { VerifyCallback } from "passport-oauth2";
 
 export const configurePassport = () => {
   passport.use(
     new GoogleStrategy(
       {
-        clientID: process.env.GOOGLE_CLIENT_ID || 'mock_client_id',
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'mock_client_secret',
-        callbackURL: process.env.CALLBACK_URL || 'http://localhost:5000/auth/google/callback',
+        clientID: process.env.GOOGLE_CLIENT_ID!,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL!,
       },
-      async (accessToken, refreshToken, profile, done) => {
+      async (
+        accessToken: string,
+        refreshToken: string,
+        profile: Profile,
+        done: VerifyCallback
+      ) => {
         try {
-          const email = profile.emails?.[0].value;
-          if (!email) return done(new Error('No email found'));
+          const email = profile.emails?.[0]?.value;
+          if (!email) {
+            return done(new Error("No email found"));
+          }
 
           let user = await prisma.user.findUnique({ where: { email } });
 
@@ -23,27 +31,28 @@ export const configurePassport = () => {
                 googleId: profile.id,
                 email,
                 name: profile.displayName,
-                avatar: profile.photos?.[0].value,
+                avatar: profile.photos?.[0]?.value,
                 accessToken,
                 refreshToken,
               },
             });
           } else {
-             user = await prisma.user.update({
+            user = await prisma.user.update({
               where: { email },
               data: { accessToken, refreshToken },
             });
           }
+
           return done(null, user);
         } catch (error) {
-          return done(error as any, undefined);
+          return done(error as Error);
         }
       }
     )
   );
 
   passport.serializeUser((user: any, done) => {
-    done(null, user.id);
+    done(null, user.id as string);
   });
 
   passport.deserializeUser(async (id: string, done) => {
@@ -51,7 +60,7 @@ export const configurePassport = () => {
       const user = await prisma.user.findUnique({ where: { id } });
       done(null, user);
     } catch (error) {
-      done(error, null);
+      done(error as Error);
     }
   });
 };
